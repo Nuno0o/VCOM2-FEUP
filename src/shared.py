@@ -24,10 +24,10 @@ class Database():
         imagePath = glob.glob(self.path_imgs + '/*/' + name + '.*')[0]
         img = cv2.imread(imagePath)
         return img
-    
-    # Extract image region
-    def img_region(self, img, xmin, xmax, ymin, ymax):
-        return img[ymin:ymax,xmin:xmax]
+
+# Extract image region
+ def img_region(img, xmin, xmax, ymin, ymax):
+    return img[ymin:ymax,xmin:xmax]
 
 if __name__ == "__main__":
     pass
