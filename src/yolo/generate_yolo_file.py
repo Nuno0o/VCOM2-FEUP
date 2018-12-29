@@ -1,5 +1,6 @@
 import sys
 sys.path.append('..')
+
 from shared import *
 
 IMG_PATH = '../../images'
