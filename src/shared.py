@@ -9,9 +9,19 @@ class Database():
         self.path_imgs = path_imgs
         self.path_annot = path_annot
 
+    # Get img path from name
+    def get_img_path(self, name):
+        return glob.glob(self.path_imgs + '/**/' + name + '.*', recursive=True)[0]
+    
+    # Get annotation path
+    def get_annot_path(self, name):
+        return glob.glob(self.path_annot + '/**/' + name + '.xml', recursive=True)[0]
+
     # Use name like 'arrabida-0001'
     def annot_coords(self, name):
-        annotPath = glob.glob(self.path_annot + '/**/' + name + '.xml', recursive=True)[0]
+        print('here')
+        annotPath = get_annot_path(name)
+        print('xd')
         try:
             tree = ET.parse(annotPath)
             root = tree.getroot()
@@ -26,7 +36,7 @@ class Database():
     
     # Use name like 'arrabida-0001'
     def read_img(self, name):
-        imagePath = glob.glob(self.path_imgs + '/**/' + name + '.*', recursive=True)[0]
+        imagePath = get_img_path(name)
         img = cv2.imread(imagePath)
         return img
     
@@ -43,10 +53,13 @@ class Database():
             except:
                 return img
 
-
 # Extract image region
 def img_region(img, xmin, xmax, ymin, ymax):
     return img[ymin:ymax,xmin:xmax]
+
+# Get full path
+def get_full_path(path):
+    return os.path.abspath(path)
 
 if __name__ == "__main__":
     pass
