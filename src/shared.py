@@ -19,17 +19,15 @@ class Database():
 
     # Use name like 'arrabida-0001'
     def annot_coords(self, name):
-        print('here')
-        annotPath = get_annot_path(name)
-        print('xd')
+        annotPath = self.get_annot_path(name)
         try:
             tree = ET.parse(annotPath)
             root = tree.getroot()
             branch = root.find('object').find('bndbox')
-            xmin = int(branch.find('xmin').text)
-            xmax = int(branch.find('xmax').text)
-            ymin = int(branch.find('ymin').text)
-            ymax = int(branch.find('ymax').text)
+            xmin = round(float(branch.find('xmin').text))
+            xmax = round(float(branch.find('xmax').text))
+            ymin = round(float(branch.find('ymin').text))
+            ymax = round(float(branch.find('ymax').text))
             return (xmin,xmax,ymin,ymax)
         except:
             return (0,0,0,0)

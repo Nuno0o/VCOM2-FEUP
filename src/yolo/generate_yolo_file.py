@@ -33,12 +33,10 @@ def main():
         for i in range(0, labels[label]):
             try:
                 name = label + '-' + str(i).zfill(4)
-                img_path = db.get_img_path(name)
-                print('ola')
+                img_path = get_full_path(db.get_img_path(name))
                 xmin,xmax,ymin,ymax = db.annot_coords(name)
-                print('boas')
-                output = img_path + ' ' + str(xmin) + ',' + str(ymin) + ',' + str(xmax) + ',' + str(ymax) + ',' + str(keys[label])
-                print(output)
+                output = img_path + ' ' + str(xmin) + ',' + str(ymin) + ',' + str(xmax) + ',' + str(ymax) + ',' + str(keys[label]) + '\n'
+                f.write(output)
             except:
                 continue
     f.close()
