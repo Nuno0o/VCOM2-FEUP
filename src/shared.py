@@ -34,7 +34,7 @@ class Database():
     
     # Use name like 'arrabida-0001'
     def read_img(self, name):
-        imagePath = get_img_path(name)
+        imagePath = self.get_img_path(name)
         img = cv2.imread(imagePath)
         return img
     
@@ -58,6 +58,30 @@ def img_region(img, xmin, xmax, ymin, ymax):
 # Get full path
 def get_full_path(path):
     return os.path.abspath(path)
+
+# Get SIFT features and descriptors
+def get_key_points(img):
+    sift = cv2.xfeatures2d.SIFT_create()
+    kp, des = sift.detectAndCompute(img, None)
+    return (kp, des)
+
+# Match images
+def match_features(features1, features2):
+    des1 = features1[1]
+    des2 = features2[1]
+
+    fb = cv2.BFMatcher()
+
+    matches = fb.match(des1, des2)
+
+    matches = sorted(matches, key = lambda x: x.distance)
+    
+    return matches
+
+def gray(img):
+    return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+
 
 if __name__ == "__main__":
     pass

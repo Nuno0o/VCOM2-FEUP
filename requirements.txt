@@ -4,3 +4,4 @@ tensorflow-gpu
 pandas
 numpy
 matplotlib
+pillow

@@ -5,9 +5,9 @@ from yolo import YOLO
 from PIL import Image
 
 def main():
-    yolo = YOLO()
+    yolo = YOLO(model_path='model_data/yolo_vcom2-tiny.h5',anchors_path='model_data/tiny_yolo_anchors.txt',classes_path='model_data/vcom_classes.txt')
 
-    imagepath = '../../../images/clerigos/clerigos-0039.jpg'
+    imagepath = '../../../images/clerigos/clerigos-0000.jpg'
     
     image = Image.open(imagepath)
 
