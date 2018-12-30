@@ -3,6 +3,11 @@ import glob
 import numpy as np
 import os
 import xml.etree.ElementTree as ET
+import pickle
+import imutils
+from sklearn import svm
+
+WIDTH = 512
 
 class Database():
     def __init__(self, path_imgs, path_annot):
@@ -78,9 +83,41 @@ def match_features(features1, features2):
     
     return matches
 
+def bow_trainer(dictionary_size):
+    return cv2.BOWKMeansTrainer(50)
+
+def bow_cluster(trainer, desc):
+    return trainer.cluster(desc)
+
+def bow_extractor(dictionary):
+    detector = cv2.xfeatures2d.SIFT_create()
+    matcher = cv2.FlannBasedMatcher()
+    extractor = cv2.BOWImgDescriptorExtractor(detector, matcher)
+    extractor.setVocabulary(dictionary)
+    return extractor
+
+def bow_extract(extractor, img, desc):
+    return extractor.compute(img, desc)
+
+def create_svm():
+    return svm.SVC()
+
 def gray(img):
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
+#def bow_trainer(features):
+
+def store_object(desc_list, path):
+    pickle.dump(desc_list, open(path, 'wb'))
+
+def load_object(path):
+    return pickle.load(open(path, 'rb'))
+
+def resize_img(img):
+    return imutils.resize(img, width=WIDTH)
+
+def array_to_np(arr):
+    return np.array(arr)
 
 
 if __name__ == "__main__":
