@@ -24,8 +24,8 @@ class Database():
 
     # Use name like 'arrabida-0001'
     def annot_coords(self, name):
-        annotPath = self.get_annot_path(name)
         try:
+            annotPath = self.get_annot_path(name)
             tree = ET.parse(annotPath)
             root = tree.getroot()
             branch = root.find('object').find('bndbox')
@@ -100,18 +100,33 @@ def bow_extract(extractor, img, desc):
     return extractor.compute(img, desc)
 
 def create_svm():
-    return svm.SVC()
+    svm = cv2.ml.SVM_create()
+    svm.setType(cv2.ml.SVM_C_SVC)
+    svm.setKernel(cv2.ml.SVM_LINEAR)
+    svm.setTermCriteria((cv2.TERM_CRITERIA_MAX_ITER, 100, 1e-6))
+    return svm
+
+def train_svm(svm,X,y):
+    svm.trainAuto(array_to_np(X), cv2.ml.ROW_SAMPLE, array_to_np(y), kFold=15)
+
+def test_svm(svm, pred):
+    return svm.predict(np.array(pred))
 
 def gray(img):
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-#def bow_trainer(features):
 
 def store_object(desc_list, path):
     pickle.dump(desc_list, open(path, 'wb'))
 
 def load_object(path):
     return pickle.load(open(path, 'rb'))
+
+def store_svm(svm, path):
+    svm.save(path)
+
+def load_svm(path):
+    return cv2.ml.SVM_load(path)
+
 
 def resize_img(img):
     return imutils.resize(img, width=WIDTH)

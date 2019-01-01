@@ -108,3 +108,6 @@ venv.bak/
 /annotations
 *.weights
 *.h5
+*.pkl
+events.out.*
+*.npz
