@@ -15,6 +15,8 @@ parser.add_argument('-train', action='store_true', help='Train classifier')
 
 parser.add_argument('-test', action='store_true', help='Test classifier')
 
+parser.add_argument('-testone', action='store_true', help='Test classifier for one image at a time')
+
 args = parser.parse_args()
 
 DESC = args.desc
@@ -24,6 +26,8 @@ BOW = args.bow
 TRAIN = args.train
 
 TEST = args.test
+
+TESTONE = args.testone
 
 IMG_PATH = '../../images'
 ANNOT_PATH = '../../annotations'
@@ -172,6 +176,29 @@ def main():
             if trues[i] == pred[i]:
                 correct += 1
         print('Accuracy: ' + str(correct/len(trues)))
+    if TESTONE:
+        print('Write image names to predict, \'exit\' to close')
+        extractor = bow_extractor(dictionary)
+        while True:
+            image_name = input('Insert image name(e.g. \'arrabida-0000\'): ')
+            if image_name == 'exit':
+                print('Leaving...')
+                exit()
+            bows = []
+            trues = []
+            print('Extracting bow for ' + image_name)
+            try:
+                img = db.read_img(image_name)
+            except:
+                print('Error reading image, try again')
+                continue
+            img = gray(img)
+            img = resize_img(img)
+            features = get_key_points(img)
+            bows.append(bow_extract(extractor, img, features[0])[0])
+            trues.append(keys[image_name.split('-')[0]])
+            pred = np.squeeze(test_svm(svm, bows)[1].astype(int))
+            print('Predicted ' + str(pred) + ' , was ' + str(trues[0]))
 
 
         
