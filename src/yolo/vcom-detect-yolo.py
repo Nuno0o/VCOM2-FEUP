@@ -1,11 +1,20 @@
 import os
 import sys
+import argparse
 sys.path.append('..')
 
 from shared import *
 from sklearn.metrics import confusion_matrix
 from yolo import YOLO
 from PIL import Image
+
+parser = argparse.ArgumentParser(description='VCOM - YOLO Image Classifier for Landmarks')
+
+parser.add_argument('-i', action='store_true', help='Choose images to test interatively')
+
+args = parser.parse_args()
+
+INT = args.i
 
 IMG_PATH = '../../images'
 ANNOT_PATH = '../../annotations'
@@ -45,27 +54,45 @@ keys = {
 def main():
     global db
 
-    yolo = YOLO(model_path='model_data/yolo_vcom3_tiny.h5',anchors_path='model_data/tiny_yolo_anchors.txt',classes_path='model_data/vcom_classes.txt')
+    yolo = YOLO(model_path='model_data/yolo_vcom.h5',anchors_path='model_data/yolo_anchors.txt',classes_path='model_data/vcom_classes.txt')
 
-    file = open(TRUE, 'w')
+    if not INT:
 
-    for label in labels:
-        for i in range(labels[label], labels_test[label]):
+        file = open(TRUE, 'w')
+
+        for label in labels:
+            for i in range(labels[label], labels_test[label]):
+                try:
+                    print('Classifying ' + str(label) + ' ' + str(i) + '/' + str(labels_test[label]))
+                    sys.stdout.flush()
+                    name = label + '-' + str(i).zfill(4)
+                    path = db.get_img_path(name)
+                    img = Image.open(path)
+                    xmin,xmax,ymin,ymax = db.annot_coords(name)
+                    _, pxmin,pxmax,pymin,pymax,score,pred = yolo.detect_image(img)
+                    file.write(str(label)+','+str(pred)+','+str(xmin)+','+str(xmax)+','+str(ymin)+','+str(ymax)+','+str(pxmin)+','+str(pxmax)+','+str(pymin)+','+str(pymax)+'\n')
+                    file.flush()
+                except Exception as e:
+                    print(e)
+                    continue
+
+        file.close()
+    
+    else:
+        while True:
+            image_name = input('Insert image name(e.g. \'arrabida-0000\'): ')
+            if image_name == 'exit':
+                print('Leaving...')
+                exit()
             try:
-                print('Classifying ' + str(label) + ' ' + str(i) + '/' + str(labels_test[label]))
-                sys.stdout.flush()
-                name = label + '-' + str(i).zfill(4)
-                path = db.get_img_path(name)
-                img = Image.open(path)
-                xmin,xmax,ymin,ymax = db.annot_coords(name)
-                _, pxmin,pxmax,pymin,pymax,score,pred = yolo.detect_image(img)
-                file.write(str(label)+','+str(pred)+','+str(xmin)+','+str(xmax)+','+str(ymin)+','+str(ymax)+','+str(pxmin)+','+str(pxmax)+','+str(pymin)+','+str(pymax)+'\n')
-                file.flush()
-            except Exception as e:
-                print(e)
+                path = db.get_img_path(image_name)
+            except:
+                print('Error reading image, try again')
                 continue
-
-    file.close()
+            img = Image.open(path)
+            xmin,xmax,ymin,ymax = db.annot_coords(image_name)
+            detect, pxmin,pxmax,pymin,pymax,score,pred = yolo.detect_image(img)
+            detect.show()
 
     yolo.close_session()
 
